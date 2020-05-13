@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">AttendanceSheet</string>
+
+    <string name="addHints_ct">Course Title</string>
+    <string name="addHints_cc">Course Code</string>
+    <string name="addButton">Add</string>
+    <string name="addcourse">Add Course</string>
+
+    <string name="editHints_ct">Edit course Title</string>
+    <string name="editHints_cc">Edit course Code</string>
+    <string name="editButton">Save</string>
+    <string name="editcourse">Edit Course</string>
+
+    <string name="_0_item_selected">0 item selected</string>
+
+
+</resources>

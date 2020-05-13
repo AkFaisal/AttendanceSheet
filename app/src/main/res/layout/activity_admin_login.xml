@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/custome_background_gradile"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="50dp"
+    tools:context=".adminLoginActivity">
+
+
+    <Button
+        android:id="@+id/faculityId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Faculty"
+        android:textSize="30sp"
+
+
+
+
+
+
+
+        />
+    <Button
+        android:id="@+id/adminId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Admin"
+        android:textSize="30sp"
+
+
+
+
+
+
+
+        />
+    <Button
+
+        android:id="@+id/studentId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="student"
+        android:textSize="30sp"
+
+
+
+
+
+
+
+        />
+
+</LinearLayout>

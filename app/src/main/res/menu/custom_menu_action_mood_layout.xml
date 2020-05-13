@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_edit_Button_ID"
+        android:icon="@drawable/ic_edit_24dp"
+        android:title="Edit"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_delete_Button_ID"
+        android:title="Add Course "
+        android:icon="@drawable/ic_menu_delete_pic"
+        android:iconTint="@color/White"
+        app:showAsAction="always"
+        >
+    </item>
+
+
+</menu>
