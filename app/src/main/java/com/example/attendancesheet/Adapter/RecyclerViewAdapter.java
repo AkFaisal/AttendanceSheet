@@ -10,16 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.attendancesheet.DB.CourseDetails;
 import com.example.attendancesheet.MainActivity;
 import com.example.attendancesheet.R;
 import com.example.attendancesheet.model.CourseEntity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
     private static ArrayList<CourseEntity> courseEntities;
     Context context;
     MainActivity mainActivity;
+
 
     public RecyclerViewAdapter(ArrayList<CourseEntity> courseEntities, MainActivity mainActivity) {
         this.courseEntities = courseEntities;
@@ -37,6 +40,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final CourseEntity courseEntity = courseEntities.get( holder.getAdapterPosition() );
+
+        //for showing course name and coure code from Sqlite datbase
+        holder.CoursetextView.setText( courseEntity.getCourseName() );
+        holder.Codetextview.setText( courseEntity.getCourseCode() );
+
         holder.bind( courseEntity );
         holder.view.setBackgroundResource( R.color.White );
         if (MainActivity.is_in_action_mood) {
@@ -68,15 +76,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public static ArrayList<CourseEntity> getDataSet() {
         return courseEntities;
     }
-
-//    public void setCourse(CourseTable courseTable) {
-//        courseTable.getC_name();
-//        courseTable.getC_code();
-//
-//
-//
-//    }
-
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         MainActivity mainActivity;

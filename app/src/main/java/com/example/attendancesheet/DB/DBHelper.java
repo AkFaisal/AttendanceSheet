@@ -24,8 +24,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private final static String COURSE_CODE = "course_code";
 
     //table for save course name
-    final String COURSE = "course_name";
-    final  String CODE = "course_code";
+   public final String COURSE = "course_name";
+    public final  String CODE = "course_code";
     final  String COURSE_TABLE_NAME = "course_name";
     final String CREATE_COURSE_TABLE="CREATE TABLE " + COURSE_TABLE_NAME + "( " + ID + " INTEGER PRIMARY KEY  AUTOINCREMENT, " + COURSE + " VARCHAR(100)," + CODE + " TEXT(6) NOT NULL)";
 
@@ -51,14 +51,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     public boolean createCourse(CourseDetails courseDetails) {
-
         //write the course info in "course" table
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put( COURSE, courseDetails.getCoursename( ));
         contentValues.put( CODE, courseDetails.getCoursecode() );
         db.insert( COURSE_TABLE_NAME, null, contentValues );
-
         //final String TABLE_NAME = courseDetails.getCoursename()+courseDetails.getCoursecode();
         final String TABLE_NAME = courseDetails.coursename + courseDetails.coursecode;
 
@@ -66,7 +64,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 + COURSE_NAME + " VARCHAR(100)," + COURSE_CODE + " TEXT(20) NOT NULL )";
         boolean tableCreated = false;
         try {
-            //SQLiteDatabase db = getWritableDatabase();
             db.execSQL( CREATE_TABLE );
             db.close();
             tableCreated = true;
@@ -75,46 +72,18 @@ public class DBHelper extends SQLiteOpenHelper {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
         return tableCreated;
     }
 
-//      public long insertData(CourseDetails courseDetails) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put( COURSE, courseDetails.getCoursename( ));
-//        contentValues.put( CODE, courseDetails.getCoursecode() );
-//
-//        long rowId = db.insert( TABLE_NAME, null, contentValues );
-//        return rowId;
-//    }
-
-//
-//   void createCourseTable(CourseDetails courseDetails) {
-//
-//        //write the course info in "course" table
-//
-//       long result = db.insert( COURSE_TABLE_NAME, null, contentValues );
-//
-//if(result == -1){
-//
-//    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT  ).show();
-//}else {
-//    Toast.makeText(context,"Added Successful",Toast.LENGTH_SHORT  ).show();
-//}
-//    }
-
-
-
     public Cursor readAllData(){
-
-        String query ="SELECT * FROM " + COURSE_TABLE_NAME;
+        String show_all ="SELECT * FROM " + COURSE_TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
+
 
         Cursor cursor =null;
 
         if(db!=null){
-           cursor= db.rawQuery( query,null );
+           cursor= db.rawQuery( show_all,null );
         }
 
         return  cursor;
