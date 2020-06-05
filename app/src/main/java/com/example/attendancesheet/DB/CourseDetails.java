@@ -4,16 +4,16 @@ package com.example.attendancesheet.DB;
 public class CourseDetails  {
 
     String coursename,coursecode;
-    String id;
-
-    public CourseDetails(String id) {
-        this.id = id;
-    }
+   private String id;
 
     public CourseDetails(String coursename, String coursecode) {
         this.coursename = coursename;
         this.coursecode = coursecode;
     }
+    public CourseDetails(String id) {
+        this.id = id;
+    }
+
 
     public CourseDetails() {
 

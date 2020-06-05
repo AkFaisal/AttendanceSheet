@@ -1,23 +1,34 @@
 package com.example.attendancesheet.model;
 
-import com.example.attendancesheet.DB.CourseDetails;
-
 public class CourseEntity {
-
+    private int id;
     private  String courseName;
     private String courseCode;
     private String text;
     private boolean isSelected = false;
 
+    public CourseEntity() {
+    }
+
     public CourseEntity(String courseName, String courseCode) {
+        this.courseName = courseName;
+        this.courseCode = courseCode;
+    }
+
+    public CourseEntity(int id, String courseName, String courseCode) {
+        this.id = id;
         this.courseName = courseName;
         this.courseCode = courseCode;
 
     }
 
-    public CourseEntity() {
+    public int getId() {
+        return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getText() {
         return text;

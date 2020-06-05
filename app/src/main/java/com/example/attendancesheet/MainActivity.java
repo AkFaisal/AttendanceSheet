@@ -2,7 +2,6 @@ package com.example.attendancesheet;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,7 +28,6 @@ import com.example.attendancesheet.databinding.EditCourseSampleLayoutBinding;
 import com.example.attendancesheet.model.CourseEntity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,8 +36,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<CourseEntity> selectionList = new ArrayList<>();
     //list of course
     private ArrayList<CourseEntity> mCourseEntitie = new ArrayList<>();
-    private CourseEntity mCourseEntity;
-
+    private ArrayList<CourseDetails> courseDetailsArrayList = new ArrayList<>();
     int counter = 0;
     MainActivity mainActivity;
     RecyclerViewAdapter.MyViewHolder myViewHolder;
@@ -49,49 +47,58 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     //Database
     DBHelper dbHelper;
-    CourseDetails courseDetails;
+    CourseDetails mCourseDetails;
+    CourseEntity mCourseEntity;
 
+    private ImageView delete;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
-        dbHelper = new DBHelper( MainActivity.this );
+        delete = (ImageView) findViewById( R.id.menu_delete_Button_ID );
+        dbHelper = new DBHelper( this );
         mbinding = DataBindingUtil.setContentView( this, R.layout.activity_main );
         toolbar = findViewById( R.id.toolbarID );
         setSupportActionBar( mbinding.include.toolbarID ); //for add custom Tool bar......
         // set recyclerview
         mbinding.rvAdapterID.setLayoutManager( new GridLayoutManager( this, 2 ) );
-        recyclerViewAdapter = new RecyclerViewAdapter( mCourseEntitie, this );
-        // adapter
-        mbinding.rvAdapterID.setAdapter( recyclerViewAdapter );
-        //recyclerViewAdapter.setCourse( mCourseEntitie );
-        displayData();
-        mbinding.rvAdapterID.setHasFixedSize( true ); // performance improve for recyclerview
-        mbinding.include.toobarSelectdedItemCunterID.setVisibility( View.GONE );//SelectdedItemCunter visibility
-
-    }
-    //for show data from SQLite database...
-    void displayData() {
-        Cursor cursor = dbHelper.readAllData();
-        if (cursor.getCount() == 0) {
-
-            Toast.makeText( context, "No Data", Toast.LENGTH_SHORT ).show();
-
-        } else {
-
-            while (cursor.moveToNext()) {
-                String cName = cursor.getString( cursor.getColumnIndex( dbHelper.COURSE ) );
-                String cCode = cursor.getString( cursor.getColumnIndex( dbHelper.CODE ) );
-                mCourseEntitie.add( new CourseEntity( cName, cCode ) );
-                recyclerViewAdapter.notifyDataSetChanged();
-
+        recyclerViewAdapter = new RecyclerViewAdapter( mCourseEntitie, new RecyclerViewAdapter.ItemClickListener() {
+            @Override
+            public void onClick(CourseEntity course, int adapterPosition) {
+                if (is_in_action_mood) {
+                    prepareSelection( adapterPosition );
+                    recyclerViewAdapter.notifyItemChanged( adapterPosition );
+                }
             }
 
-        }
-
+            @Override
+            public void onLongClick(CourseEntity course, int adapterPosition) {
+                prepareToolbar( adapterPosition );
+            }
+        } );
+        // adapter
+        mbinding.rvAdapterID.setAdapter( recyclerViewAdapter );
+        displayData();  // for showing data
+        mbinding.rvAdapterID.setHasFixedSize( true ); // performance improve for recyclerview
+        mbinding.include.toobarSelectdedItemCunterID.setVisibility( View.GONE );//SelectdedItemCunter visibility
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 
+    //for show data from SQLite database...
+    void displayData() {
+        ArrayList<CourseEntity> courses = dbHelper.readCourses();
+        try {
+            if (courses == null || courses.isEmpty()) {
+                Toast.makeText( context, "No Data", Toast.LENGTH_SHORT ).show();
+                return;
+            }
+        } catch (Exception e) {
+
+        }
+        mCourseEntitie.addAll( courses );
+        recyclerViewAdapter.notifyDataSetChanged();
+    }
 
     //for menu
     @Override
@@ -103,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
     //for selected item + menu action mood
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
         if (item.getItemId() == R.id.addCourse_menu_ID) {
             addCourse();
@@ -152,15 +159,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-        } else if (item.getItemId() == R.id.menu_delete_Button_ID) {
+        } else if (item.getItemId() == R.id.menu_delete_Button_ID) {  //.......................................................................................................
 
             AlertDialog.Builder builder = new AlertDialog.Builder( MainActivity.this );
             builder.setMessage( "Are you sure!" ).setPositiveButton( "Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+
                     is_in_action_mood = false;
+
+                    for (CourseEntity course : selectionList) {
+                        dbHelper.deleteData( course.getId() );
+                        String table = course.getCourseName() + course.getCourseCode();
+                        dbHelper.deleteTable(  table );
+                    }
                     recyclerViewAdapter.removeData( selectionList );
-                    clearActionMode();
+                    recyclerViewAdapter.notifyDataSetChanged();
                     Toast.makeText( MainActivity.this, "Deleted", Toast.LENGTH_SHORT ).show();
                 }
             } ).setNegativeButton( "Cancel", null );
@@ -197,9 +211,9 @@ public class MainActivity extends AppCompatActivity {
                 String course_name = binding.addEdtCTID.getText().toString();
                 String course_code = binding.addEdtCCID.getText().toString();
 
-                courseDetails = new CourseDetails();
-                courseDetails.setCoursename( course_name );
-                courseDetails.setCoursecode( course_code );
+                mCourseDetails = new CourseDetails();
+                mCourseDetails.setCoursename( course_name );
+                mCourseDetails.setCoursecode( course_code );
 
                 if (TextUtils.isEmpty( course_name )) {
                     Toast.makeText( MainActivity.this, "Please enter the Cname", Toast.LENGTH_SHORT ).show();
@@ -211,13 +225,17 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText( MainActivity.this, "Please enter valid Ccode", Toast.LENGTH_SHORT ).show();
                     return;
                 }
-                dbHelper.createCourse( courseDetails );
+                int id = dbHelper.createCourse( mCourseDetails );
+                if (id > 0) {
+                    CourseEntity courseEntity = new CourseEntity( id, course_name, course_code );
+                    recyclerViewAdapter.addCourse( courseEntity );
+                    mbinding.rvAdapterID.smoothScrollToPosition( recyclerViewAdapter.getItemCount() );
+                } else {
+
+                    Toast.makeText( MainActivity.this, "Course added failed", Toast.LENGTH_SHORT ).show();
+                }
+
                 dialog.dismiss();
-                CourseEntity courseEntity = new CourseEntity( course_name, course_code );
-                recyclerViewAdapter.addCourse( courseEntity );
-                mbinding.rvAdapterID.smoothScrollToPosition( recyclerViewAdapter.getItemCount() );
-
-
             }
         } );
 
@@ -226,10 +244,11 @@ public class MainActivity extends AppCompatActivity {
 
     //selection item counter
     public void prepareSelection(int position) {
-        if (!selectionList.contains( mCourseEntitie.get( position ) )) {
-            selectionList.add( mCourseEntitie.get( position ) );
+        CourseEntity selectedCourse = mCourseEntitie.get( position );
+        if (!selectionList.contains( selectedCourse )) {
+            selectionList.add( selectedCourse );
         } else {
-            selectionList.remove( mCourseEntitie.get( position ) );
+            selectionList.remove( selectedCourse );//.......................................................................
         }
 
         updateViewCounter();
@@ -291,5 +310,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return 0;
     }
+
 
 }
